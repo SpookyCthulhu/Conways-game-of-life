@@ -1,0 +1,130 @@
+<!doctype HTML>
+<HTML>
+<head>
+	<title>Conway's game of Life</title>
+</head>
+<body>
+	<script>
+		// Game of life
+		// If a tile has >= 3 living cells adjacent to it a new cell is born, if a living cell has >= 2 other cells next to it then it survives, otherwise it dies.
+
+
+		// Modify to fit viewport.
+
+		let height = window.innerHeight;
+		let width = window.innerWidth * 0.95;
+
+		let size = 20;
+		let sizeTxt = size + 'px';
+
+		let numCol = Math.floor(width / size);
+		let numRow = Math.floor(height / size);
+
+		let style = document.createElement('style');
+		style.type = 'text/css';
+		style.innerHTML = '.living { background-color: black;}';
+		document.getElementsByTagName('head')[0].appendChild(style);
+
+
+		// Adds cells to the world and sets some to black.
+		let blankSlate = () => {
+			let world = [];
+		  for (let i = 0; i < numRow; i++) {
+		    for (let j = 0; j < numCol; j++) {
+		      let cell = document.createElement('div');
+		      cell.style.width = sizeTxt;
+		      cell.style.height = sizeTxt;
+		      cell.style.boxSizing = 'border-box';
+		      cell.style.position = 'fixed';
+		      cell.style.border = '2px solid black';
+		      cell.style.left = size * j + 'px';
+		      cell.style.top = size * i + 'px';
+		      if (Math.ceil(Math.random() * 100) > 85) {
+		        cell.classList.add('living');
+		      }
+		      world.push(cell);
+		    }
+		  }
+		  return world;
+		}
+
+		let world = blankSlate();
+
+		world.forEach(cell => document.body.appendChild(cell));
+
+		// Toggles class for each cell by checking surronding neighbors.
+		let update = () => {
+			console.log('This')
+			// creates a list of 1 and 0's to represent living or empty cells.
+			let activations = [];
+		  for (let i = 0; i < world.length; i++) {
+		    let neighbors = 0;
+		    // use columns to check for out of bounds.
+		    let col = i % numCol;
+		    // controls current row relative to world[i].
+		    let row = -1;
+		    
+		    // track row and col by j.
+		    for (let j = 0; j < 3; j++) {
+		      if (i + numCol * row > -1 && i + numCol * row < world.length) {
+		      	// increments the column.
+		      	for (let k = -1; k < 2; k++) {
+		        	if (col + k > -1 && col + k < 10) {
+		          	if (world[i + k + (row * numCol)].className == 'living') {
+		            	neighbors++;
+		            }
+		          }
+		        }
+		      }
+		      row++;
+		    }
+		    
+		    // If neighbors are 2-3 for living cell or 3 for dead
+		    // cells then that cell becomes living. Otherwise
+		    // that cell is dead.
+		    
+		    if (neighbors > 2) {
+		    	if (world[i].className == 'living') {
+		      	neighbors--;
+		      }
+		    	if (neighbors > 3) {
+		      	activations.push(0);
+		      } else {
+		      	activations.push(1);
+		      }
+		  	} else {
+		    	activations.push(0);
+		    }
+		  }
+		  console.log(activations);
+		  for (let cell = 0; cell < world.length; cell++) {
+		    	if (activations[cell] == 1) {
+		      	world[cell].classList.add('living');
+		      } else {
+		      	world[cell].classList.remove('living');
+		      }
+		    }
+		}
+
+		let menu = document.createElement('div');
+		menu.style.left = width + 'px';
+		menu.style.top = '0px';
+		menu.style.height = height + 'px';
+		menu.style.width = '5%';
+		menu.style.backgroundColor = 'grey';
+		menu.style.position = 'fixed';
+
+		document.body.appendChild(menu);
+
+		let button = document.createElement('button');
+		button.innerHTML = 'play';
+		button.onclick = function() {update()};
+
+
+		menu.appendChild(button);
+	</script>
+</body>
+</HTML>
+
+
+
